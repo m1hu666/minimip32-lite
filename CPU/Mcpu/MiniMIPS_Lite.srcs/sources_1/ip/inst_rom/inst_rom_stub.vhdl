@@ -1,10 +1,10 @@
 -- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
--- Date        : Sun Dec  7 13:21:09 2025
+-- Date        : Fri Dec 12 11:41:22 2025
 -- Host        : LAPTOP-476JT8H0 running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode synth_stub
---               D:/project/cslab/mips/Mcpu/MiniMIPS_Lite/MiniMIPS_Lite.srcs/sources_1/ip/inst_rom/inst_rom_stub.vhdl
+-- Command     : write_vhdl -force -mode synth_stub -rename_top inst_rom -prefix
+--               inst_rom_ inst_rom_stub.vhdl
 -- Design      : inst_rom
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7z020clg400-1

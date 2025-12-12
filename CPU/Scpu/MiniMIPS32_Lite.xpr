@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="39" Path="D:/project/cslab/mips/Scpu/MiniMIPS32_Lite.xpr">
+<Project Version="7" Minor="39" Path="D:/Scpu/MiniMIPS32_Lite.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="cf769769925646d98f708c881282bf34"/>
@@ -39,13 +39,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="9"/>
-    <Option Name="WTModelSimExportSim" Val="9"/>
-    <Option Name="WTQuestaExportSim" Val="9"/>
-    <Option Name="WTIesExportSim" Val="9"/>
-    <Option Name="WTVcsExportSim" Val="9"/>
-    <Option Name="WTRivieraExportSim" Val="9"/>
-    <Option Name="WTActivehdlExportSim" Val="9"/>
+    <Option Name="WTXSimExportSim" Val="10"/>
+    <Option Name="WTModelSimExportSim" Val="10"/>
+    <Option Name="WTQuestaExportSim" Val="10"/>
+    <Option Name="WTIesExportSim" Val="10"/>
+    <Option Name="WTVcsExportSim" Val="10"/>
+    <Option Name="WTRivieraExportSim" Val="10"/>
+    <Option Name="WTActivehdlExportSim" Val="10"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -62,7 +62,7 @@
       <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/sources_1/ip/clkdiv/clkdiv.xci">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Mcpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/ip/clkdiv/clkdiv.xci"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Mcpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/ip/clkdiv/clkdiv.xci"/>
           <Attr Name="ImportTime" Val="1765077956"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -71,7 +71,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/defines.v">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/defines.v"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/defines.v"/>
           <Attr Name="ImportTime" Val="1764432410"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -80,7 +80,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/MiniMIPS32_Lite.sv">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/MiniMIPS32_Lite.sv"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/MiniMIPS32_Lite.sv"/>
           <Attr Name="ImportTime" Val="1764430889"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -89,7 +89,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/MiniMIPS32_Lite_FullSyS.sv">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/MiniMIPS32_Lite_FullSyS.sv"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/MiniMIPS32_Lite_FullSyS.sv"/>
           <Attr Name="ImportTime" Val="1764432147"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -98,16 +98,10 @@
       </File>
       <File Path="$PSRCDIR/sources_1/new/top.v">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/top.v"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/new/top.v"/>
           <Attr Name="ImportTime" Val="1764432127"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../lab/Scpu/coe_files/and_inst.coe">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -127,7 +121,7 @@
       <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/sim_1/new/tb_MiniMIPS32_Lite_FullSyS.sv">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sim_1/new/tb_MiniMIPS32_Lite_FullSyS.sv"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sim_1/new/tb_MiniMIPS32_Lite_FullSyS.sv"/>
           <Attr Name="ImportTime" Val="1764428369"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -152,7 +146,7 @@
     <FileSet Name="inst_rom" Type="BlockSrcs" RelSrcDir="$PSRCDIR/inst_rom">
       <File Path="$PSRCDIR/sources_1/ip/inst_rom/inst_rom.xci">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/ip/inst_rom/inst_rom.xci"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/ip/inst_rom/inst_rom.xci"/>
           <Attr Name="ImportTime" Val="1764426874"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -168,7 +162,7 @@
       <File Path="$PSRCDIR/sources_1/ip/data_ram/data_ram.xci">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../../lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/ip/data_ram/data_ram.xci"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../project/cslab/lab/Scpu/MiniMIPS32_Lite_FullSyS.srcs/sources_1/ip/data_ram/data_ram.xci"/>
           <Attr Name="ImportTime" Val="1764433226"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>

@@ -24,7 +24,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='D:/project/cslab/mips/Scpu/MiniMIPS32_Lite/MiniMIPS32_Lite.runs/inst_rom_synth_1'
+HD_PWD='D:/Scpu/MiniMIPS32_Lite.runs/inst_rom_synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log
