@@ -1,179 +1,94 @@
-`timescale 1ns / 1ps
-
-module x7seg_scan(
-    input                      sys_clk,
-    input                      sys_rst_n,
-    input                      clk_flag,
-    input           [7 : 0]    iDIGH,
-    input           [7 : 0]    iDIGL,
-    output logic    [3 : 0]    x7seg_data,
-    output logic    [3 : 0]    an
-    );
-    
-    localparam STUBNUM = 4;
-    localparam  AN0  = 4'b0001,
-                AN1  = 4'b0010,
-                AN2  = 4'b0100,
-                AN3  = 4'b1000;
-                
-    logic [1 : 0] r_cnt;
-    
-    always_ff @(posedge sys_clk or negedge sys_rst_n) begin
-        if (~sys_rst_n) r_cnt <= 2'b00;
-        else if (clk_flag) begin
-            if (r_cnt == STUBNUM - 1) r_cnt <= 2'b00;
-            else r_cnt <= r_cnt + 1;
-        end
-        else r_cnt <= r_cnt;
-    end
-    
-    always_ff @(posedge sys_clk or negedge sys_rst_n) begin
-        if (~sys_rst_n) an <= 4'b1111;
-        else begin
-            case (r_cnt)
-                2'b00 : an <= AN0;
-                2'b01 : an <= AN1;
-                2'b10 : an <= AN2;
-                2'b11 : an <= AN3;
-            endcase
-        end
-    end
-    
-    always_ff @(posedge sys_clk or negedge sys_rst_n) begin
-        if (~sys_rst_n) x7seg_data <= 4'b0000;
-        else begin
-            case (r_cnt)
-                2'b00 : x7seg_data <= iDIGL[3 : 0];
-                2'b01 : x7seg_data <= iDIGL[7 : 4];
-                2'b10 : x7seg_data <= iDIGH[3 : 0];
-                2'b11 : x7seg_data <= iDIGH[7 : 4];
-            endcase
-        end
-    end
-    
-endmodule
-
-///////////////////////////////////////////////////////////
-
-module x7seg_dec(
-    input [3 : 0] D,
-    output logic [7 : 0] a_to_g
-    );
-    
-    localparam  NUM0 = 8'b1100_0000,
-                NUM1 = 8'b1111_1001,
-                NUM2 = 8'b1010_0100,
-                NUM3 = 8'b1011_0000,
-                NUM4 = 8'b1001_1001,
-                NUM5 = 8'b1001_0010,
-                NUM6 = 8'b1000_0010,
-                NUM7 = 8'b1111_1000,
-                NUM8 = 8'b1000_0000,
-                NUM9 = 8'b1001_0000,
-                NUMA = 8'b1000_1000,
-                NUMB = 8'b1000_0011,
-                NUMC = 8'b1100_0110,
-                NUMD = 8'b1010_0001,
-                NUME = 8'b1000_0110,
-                NUMF = 8'b1000_1110;
-    
-    always_comb begin
-
-        case(D)
-            4'h0:   a_to_g = NUM0;  
-            4'h1:   a_to_g = NUM1;  
-            4'h2:   a_to_g = NUM2;  
-            4'h3:   a_to_g = NUM3;  
-            4'h4:   a_to_g = NUM4;  
-            4'h5:   a_to_g = NUM5;  
-            4'h6:   a_to_g = NUM6;  
-            4'h7:   a_to_g = NUM7;  
-            4'h8:   a_to_g = NUM8;  
-            4'h9:   a_to_g = NUM9;
-            4'hA:   a_to_g = NUMA;
-            4'hB:   a_to_g = NUMB;
-            4'hC:   a_to_g = NUMC;
-            4'hD:   a_to_g = NUMD;
-            4'hE:   a_to_g = NUME;
-            4'hF:   a_to_g = NUMF;
-        endcase
-    
-   end 
-    
-endmodule
-
-///////////////////////////////////////////////////////////////
-
-module clken(
-    input           sys_clk,
-    input           sys_rst_n,
-    output logic    clk_flag
-    );
-    `ifdef SIMULATION
-        localparam SYS_CLK_FREQ     = 25_000_000;
-        localparam TARGET_CLK_FREQ  = 2_500_000;
-        localparam N                = 20;
-        localparam CNT_MAX          = SYS_CLK_FREQ / TARGET_CLK_FREQ;
-    `else
-        localparam SYS_CLK_FREQ     = 25_000_000;
-        localparam TARGET_CLK_FREQ  = 1_000;
-        localparam N                = 20;
-        localparam CNT_MAX          = SYS_CLK_FREQ / TARGET_CLK_FREQ;
-    `endif
-    
-    logic   [N - 1 : 0] r_cnt;
-    
-    always_ff @(posedge sys_clk or negedge sys_rst_n) begin
-    
-        if(!sys_rst_n)  r_cnt <= 0;
-        else if (r_cnt == CNT_MAX - 1)    r_cnt <= 0;
-        else    r_cnt <= r_cnt + 1;
-    
-    end
-    
-    always_ff @(posedge sys_clk or negedge sys_rst_n) begin
-    
-        if(!sys_rst_n)  clk_flag = 1'b0;
-        else if (r_cnt == CNT_MAX - 1)    clk_flag <= 1'b1;
-        else    clk_flag = 1'b0;
-    
-    end
-    
-endmodule
-
-///////////////////////////////////////////////////////////////////////////
-
 module x7seg(
-    input                   sys_clk,
-    input                   sys_rst_n,
-    input        [7 : 0]    iDIGL,
-    input        [7 : 0]    iDIGH,
-    output logic [3 : 0]    an,
-    output logic [7 : 0]    a_to_g
-    );
+    input clk,          // 100Mhz
+    input [3:0] seg_wdata[0:8],
+    output logic [3:0] seg_cs,
+    output logic [7:0] seg_data
+);
+    logic [3:0]   scan_sel    = 4'd0;
+    parameter   SCAN_DELAY  = 50_000; // 时钟频率为50MHz，1ms更新一次扫描信号
+    logic [16:0]  scan_cnt    = 17'd0;
+    wire        scan_en     = (scan_cnt == SCAN_DELAY - 1'b1);
     
-    logic           clk_1MS;
-    logic [3 : 0]   x7seg_data;
+    // 扫描计数器
+    always @(posedge clk)
+    begin
+        if (scan_en)
+            scan_cnt <= 17'd0;
+        else
+            scan_cnt <= scan_cnt + 1'b1;
+    end
     
-    clken U0( 
-        .sys_clk    (sys_clk)   ,
-        .sys_rst_n  (sys_rst_n) ,
-        .clk_flag   (clk_1MS)
-    );
+    // 更新扫描信号
+    always @(posedge clk)
+    begin
+        if (scan_en)
+            if (scan_sel == 4'd8)
+                scan_sel <= 4'd0;
+            else
+                scan_sel <= scan_sel + 1'b1;
+    end
+
+    logic [7:0] digit[0:8];
+    seg_decoder seg_decoder0(.in_data(seg_wdata[0][3:0]), .out_data(digit[0][6:0])); // 数码管0的数值
+    seg_decoder seg_decoder1(.in_data(seg_wdata[1][3:0]), .out_data(digit[1][6:0])); // 数码管1的数值
+    seg_decoder seg_decoder2(.in_data(seg_wdata[2][3:0]), .out_data(digit[2][6:0])); // 数码管2的数值
+    seg_decoder seg_decoder3(.in_data(seg_wdata[3][3:0]), .out_data(digit[3][6:0])); // 数码管3的数值
+    seg_decoder seg_decoder4(.in_data(seg_wdata[4][3:0]), .out_data(digit[4][6:0])); // 数码管4的数值
+    seg_decoder seg_decoder5(.in_data(seg_wdata[5][3:0]), .out_data(digit[5][6:0])); // 数码管5的数值
+    seg_decoder seg_decoder6(.in_data(seg_wdata[6][3:0]), .out_data(digit[6][6:0])); // 数码管6的数值
+    seg_decoder seg_decoder7(.in_data(seg_wdata[7][3:0]), .out_data(digit[7][6:0])); // 数码管7的数值
+    seg_decoder seg_decoder8(.in_data(seg_wdata[8][3:0]), .out_data(digit[8][6:0])); // 数码管8的数值
+    assign digit[0][7] = 1'b1; // 数码管0的小数点，不显示小数点
+    assign digit[1][7] = 1'b1; // 数码管1的小数点，不显示小数点
+    assign digit[2][7] = 1'b1; // 数码管2的小数点，不显示小数点
+    assign digit[3][7] = 1'b1; // 数码管3的小数点，不显示小数点
+    assign digit[4][7] = 1'b1; // 数码管4的小数点，不显示小数点
+    assign digit[5][7] = 1'b1; // 数码管5的小数点，不显示小数点
+    assign digit[6][7] = 1'b1; // 数码管6的小数点，不显示小数点
+    assign digit[7][7] = 1'b1; // 数码管7的小数点，不显示小数点
+    assign digit[8][7] = 1'b1; // 数码管8的小数点，不显示小数点
     
-    x7seg_scan U1(
-        .sys_clk    (sys_clk)   ,
-        .sys_rst_n  (sys_rst_n) ,
-        .clk_flag   (clk_1MS)   ,
-        .iDIGH      (iDIGH)     ,
-        .iDIGL      (iDIGL)     ,
-        .x7seg_data (x7seg_data),
-        .an         (an)
-    );
+    assign seg_data = digit[scan_sel];
+    assign seg_cs = scan_sel;
     
-    x7seg_dec U2(
-        .D      (x7seg_data),
-        .a_to_g (a_to_g)    
-    );
+endmodule
+
+module seg_decoder(
+    input   [3:0]   in_data, 
+    output logic [6:0]   out_data  
+);
+
+    /*
+    segment map
+        a
+       ---
+    f |   | b
+      | g |
+       ---
+    e |   | c
+      |   |
+       ---  . h
+        d
     
+    sequence: hgfe_dcba
+    */
+
+    assign out_data =  (in_data == 4'h0) ? 7'b100_0000 : // 0
+                        (in_data == 4'h1) ? 7'b111_1001 : // 1
+                        (in_data == 4'h2) ? 7'b010_0100 : // 2
+                        (in_data == 4'h3) ? 7'b011_0000 : // 3
+                        (in_data == 4'h4) ? 7'b001_1001 : // 4
+                        (in_data == 4'h5) ? 7'b001_0010 : // 5
+                        (in_data == 4'h6) ? 7'b000_0010 : // 6
+                        (in_data == 4'h7) ? 7'b111_1000 : // 7
+                        (in_data == 4'h8) ? 7'b000_0000 : // 8
+                        (in_data == 4'h9) ? 7'b001_0000 : // 9
+                        (in_data == 4'ha) ? 7'b000_1000 : // A
+                        (in_data == 4'hb) ? 7'b000_0011 : // b
+                        (in_data == 4'hc) ? 7'b100_0110 : // C
+                        (in_data == 4'hd) ? 7'b010_0001 : // d
+                        (in_data == 4'he) ? 7'b000_0110 : // E
+                        (in_data == 4'hf) ? 7'b000_1110 : // F
+                        7'h7f; // no display
+
 endmodule
