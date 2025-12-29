@@ -1,3 +1,4 @@
+#ifdef USE_GUI
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
@@ -705,3 +706,5 @@ void ui_mainloop_gui() {
     g_idle_add(delayed_init, NULL);
     gtk_main();
 }
+
+#endif 
