@@ -1,6 +1,6 @@
 #include "monitor.h"
 #include "helper.h"
-
+#include "trace.h"
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -24,6 +24,7 @@ void print_bin_instr(uint32_t pc) {
 	sprintf(asm_buf + l, "%*.s", 8, "");
 }
 
+uint32_t current_instr_pc;
 /* Simulate how the MiniMIPS32 CPU works. */
 void cpu_exec(volatile uint32_t n) {
 	
@@ -52,6 +53,7 @@ void cpu_exec(volatile uint32_t n) {
 
 		/* Execute one instruction, including instruction fetch,
 		 * instruction decode, and the actual execution. */
+		current_instr_pc = pc;
 		exec(pc);
 
 		cpu.pc += 4;

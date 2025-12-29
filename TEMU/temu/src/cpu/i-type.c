@@ -47,99 +47,108 @@ static void decode_imm_zero_extend(uint32_t instr) {
 }
 
 make_helper(lui) {
-
-	decode_imm_type(instr);
-	reg_w(op_dest->reg) = (op_src2->val << 16);
-	sprintf(assembly, "lui   %s,   0x%04x", REG_NAME(op_dest->reg), op_src2->imm);
+    decode_imm_type(instr);
+    uint32_t val = (op_src2->val << 16);
+    set_reg(op_dest->reg, val);
+    sprintf(assembly, "lui   %s,   0x%04x",
+            REG_NAME(op_dest->reg), op_src2->imm);
 }
 
 make_helper(ori) {
-
-    decode_imm_zero_extend(instr); // 使用0扩展解码
-    reg_w(op_dest->reg) = op_src1->val | op_src2->val;
-	sprintf(assembly, "ori   %s,   %s,   0x%04x", REG_NAME(op_dest->reg), REG_NAME(op_src1->reg), op_src2->imm);
+    decode_imm_zero_extend(instr);
+    uint32_t val = op_src1->val | op_src2->val;
+    set_reg(op_dest->reg, val);
+    sprintf(assembly, "ori   %s,   %s,   0x%04x",
+            REG_NAME(op_dest->reg), REG_NAME(op_src1->reg), op_src2->imm);
 }
 
+// bne 不写寄存器，不调用 set_reg
 make_helper(bne) {
-
-	decode_simm_type(instr);
-	if (reg_w(op_dest->reg) != op_src1->val) {
-		cpu.pc += (op_src2->simm << 2);
-	}
-	sprintf(assembly, "bne   %s,   %s,   %d", REG_NAME(op_src1->reg), REG_NAME(op_dest->reg), op_src2->simm);
+    decode_simm_type(instr);
+    if (reg_w(op_dest->reg) != op_src1->val) {
+        cpu.pc += (op_src2->simm << 2);
+    }
+    sprintf(assembly, "bne   %s,   %s,   %d",
+            REG_NAME(op_src1->reg), REG_NAME(op_dest->reg), op_src2->simm);
 }
 
 make_helper(lw) {
-
-	decode_simm_type(instr);
-	uint32_t vaddr = op_src1->val + op_src2 -> simm;
-	Assert(vaddr % 4 == 0, "lw addr error\n");
-	uint32_t paddr = vaddr & 0x7fffffff;
-	reg_w(op_dest->reg) = mem_read(paddr, 4);
-	sprintf(assembly, "lw    %s,   %d(%s)", REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
+    decode_simm_type(instr);
+    uint32_t vaddr = op_src1->val + op_src2->simm;
+    Assert(vaddr % 4 == 0, "lw addr error\n");
+    uint32_t paddr = vaddr & 0x7fffffff;
+    uint32_t val = mem_read(paddr, 4);
+    set_reg(op_dest->reg, val);
+    sprintf(assembly, "lw    %s,   %d(%s)",
+            REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
 }
 
+// sw 只写内存，不写寄存器
 make_helper(sw) {
-
-	decode_simm_type(instr);
-	uint32_t vaddr = op_src1->val + op_src2 -> simm;
-	Assert(vaddr % 4 == 0, "sw addr error\n");
-	uint32_t paddr = vaddr & 0x7fffffff;
-	mem_write(paddr, 4, reg_w(op_dest->reg));
-	sprintf(assembly, "sw    %s,   %d(%s)", REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
+    decode_simm_type(instr);
+    uint32_t vaddr = op_src1->val + op_src2->simm;
+    Assert(vaddr % 4 == 0, "sw addr error\n");
+    uint32_t paddr = vaddr & 0x7fffffff;
+    mem_write(paddr, 4, reg_w(op_dest->reg));   // 注意 mem_write 参数顺序
+    sprintf(assembly, "sw    %s,   %d(%s)",
+            REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
 }
 
 make_helper(andi) {
-
-    decode_imm_zero_extend(instr); 
+    decode_imm_zero_extend(instr);
     uint32_t res = op_src1->val & op_src2->val;
-    reg_w(op_dest->reg) = res;
-	sprintf(assembly, "andi  %s,   %s,   0x%04x", REG_NAME(op_dest->reg), REG_NAME(op_src1->reg), op_src2->imm);
+    set_reg(op_dest->reg, res);
+    sprintf(assembly, "andi  %s,   %s,   0x%04x",
+            REG_NAME(op_dest->reg), REG_NAME(op_src1->reg), op_src2->imm);
 }
 
 make_helper(addiu) {
-
-	decode_simm_type(instr);
-	reg_w(op_dest->reg) = op_src1->val + op_src2->simm;
-	sprintf(assembly, "addiu %s,   %s,   %d", REG_NAME(op_dest->reg), REG_NAME(op_src1->reg), op_src2->simm);
+    decode_simm_type(instr);
+    uint32_t val = op_src1->val + op_src2->simm;
+    set_reg(op_dest->reg, val);
+    sprintf(assembly, "addiu %s,   %s,   %d",
+            REG_NAME(op_dest->reg), REG_NAME(op_src1->reg), op_src2->simm);
 }
 
+// beq 不写寄存器
 make_helper(beq) {
-
-	decode_simm_type(instr);
-	if(op_src1->val == reg_w(op_dest->reg)) {
-		cpu.pc += (op_src2->simm << 2);
-	}
-	sprintf(assembly, "beq   %s,   %s,   %d", REG_NAME(op_src1->reg), REG_NAME(op_dest->reg), op_src2->simm);
+    decode_simm_type(instr);
+    if (op_src1->val == reg_w(op_dest->reg)) {
+        cpu.pc += (op_src2->simm << 2);
+    }
+    sprintf(assembly, "beq   %s,   %s,   %d",
+            REG_NAME(op_src1->reg), REG_NAME(op_dest->reg), op_src2->simm);
 }
 
 make_helper(lb) {
-
-	decode_simm_type(instr);
-	uint32_t vaddr = op_src1->val + op_src2 -> simm;
-	uint32_t paddr = vaddr & 0x7fffffff;
+    decode_simm_type(instr);
+    uint32_t vaddr = op_src1->val + op_src2->simm;
+    uint32_t paddr = vaddr & 0x7fffffff;
     int8_t byte_data = mem_read(paddr, 1);
     int32_t sign_extended = (int32_t)byte_data;
-    reg_w(op_dest->reg) = sign_extended;
-	sprintf(assembly, "lb    %s,   %d(%s)", REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
+    set_reg(op_dest->reg, (uint32_t)sign_extended);
+    sprintf(assembly, "lb    %s,   %d(%s)",
+            REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
 }
 
+// sb 只写内存
 make_helper(sb) {
-
-	decode_simm_type(instr);
-	uint32_t vaddr = op_src1->val + op_src2 -> simm;
-	uint32_t paddr = vaddr & 0x7fffffff;
+    decode_simm_type(instr);
+    uint32_t vaddr = op_src1->val + op_src2->simm;
+    uint32_t paddr = vaddr & 0x7fffffff;
     uint8_t data = reg_w(op_dest->reg) & 0xFF;
     mem_write(paddr, 1, data);
-	sprintf(assembly, "sb    %s,   %d(%s)", REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
+    sprintf(assembly, "sb    %s,   %d(%s)",
+            REG_NAME(op_dest->reg), op_src2->simm, REG_NAME(op_src1->reg));
 }
 
+// blez 不写寄存器
 make_helper(blez) {
-
     decode_simm_type(instr);
-    int32_t v = (int32_t)op_src1->val;   // 按有符号数理解寄存器
+    int32_t v = (int32_t)op_src1->val;
     if (v <= 0) {
         cpu.pc += (op_src2->simm << 2);
     }
-    sprintf(assembly, "blez   %s,   %d", REG_NAME(op_src1->reg), op_src2->simm);
+    sprintf(assembly, "blez   %s,   %d",
+            REG_NAME(op_src1->reg), op_src2->simm);
 }

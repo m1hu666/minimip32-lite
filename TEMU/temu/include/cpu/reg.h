@@ -36,6 +36,7 @@ static inline int check_reg_index(int index) {
 #define reg_h(index) (cpu.gpr[check_reg_index(index)]._16)
 #define reg_b(index) (cpu.gpr[check_reg_index(index)]._8)
 
+void set_reg(int idx, uint32_t val);
 extern const char* regfile[];
 
 #endif

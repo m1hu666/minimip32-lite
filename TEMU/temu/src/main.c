@@ -1,3 +1,4 @@
+#include "trace.h"
 
 void init_monitor(int, char *[]);
 void restart();
@@ -17,5 +18,6 @@ int main(int argc, char *argv[]) {
 	/* Receive commands from user. */
 	ui_mainloop();
 
+    trace_close();
 	return 0;
 }
