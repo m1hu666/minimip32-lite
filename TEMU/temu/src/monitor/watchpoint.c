@@ -93,7 +93,9 @@ void print_wp() {
 	}
 }
 	
-
+WP *get_wp_head() {
+    return head;
+}
 
 
 

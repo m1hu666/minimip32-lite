@@ -10,7 +10,7 @@ uint32_t instr;
 
 /* TODO: Add more instructions!!! */
 //ori、lui、addu、bne、lw、sw、andi、or、xor、addiu、beq、lb、sb、sll
-//add srav blez
+//add、srav、blez
 
 op_fun opcode_table [64] = {
 /* 0x00 */	_2byte_esc, inv, inv, inv,

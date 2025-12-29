@@ -12,4 +12,12 @@ typedef struct watchpoint {
 	uint32_t val;
 
 } WP;
+
+void init_wp_pool();
+WP* new_wp();
+void free_wp(WP *wp);
+bool check_wp();
+void delete_wp(int n);
+void print_wp();
+WP* get_wp_head();  // 新增：获取监视点链表头
 #endif
