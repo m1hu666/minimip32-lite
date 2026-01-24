@@ -59,8 +59,13 @@ module exe_stage (
                       (exe_aluop_i == `MINIMIPS32_LUI)                                     ? exe_src2_i : `ZERO_WORD;
     
     /*------------------- 移位运算 -------------------*/
+    // SRAV: 算术右移，手动实现符号扩展
+    // 方法：扩展到 64 位，高 32 位填充符号位，右移后取低 32 位
+    wire [63:0] srav_temp = {{32{exe_src2_i[31]}}, exe_src2_i} >> exe_src1_i[4:0];
+    wire [31:0] srav_result = srav_temp[31:0];
+    
     assign shiftres = (exe_aluop_i == `MINIMIPS32_SLL)  ? (exe_src2_i << exe_src1_i[4:0]) :
-                      (exe_aluop_i == `MINIMIPS32_SRAV) ? ($signed(exe_src2_i) >>> exe_src1_i[4:0]) : `ZERO_WORD;
+                      (exe_aluop_i == `MINIMIPS32_SRAV) ? srav_result : `ZERO_WORD;
     
     /*------------------- 算术运算 -------------------*/
     // 计算加法结果

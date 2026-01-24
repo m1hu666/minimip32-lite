@@ -27,8 +27,17 @@ module mem_stage (
     output wire [`INST_ADDR_BUS] 	    debug_wb_pc  // 供调试使用的PC值，上板测试时务必删除该信号
     );
 
-    // 数据存储器地址
-    assign daddr = mem_wd_i;
+    // 数据存储器地址 - 映射虚拟地址到物理地址
+    // 16KB data_ram，字地址12位（bit 13:2），保留低14位后取[13:2]即可
+    assign daddr = {18'b0, mem_wd_i[13:0]};  // 低14位：bit13-bit0
+    
+    // 调试信息输出
+    always @(*) begin
+        if (is_load || is_store) begin
+            $display("DEBUG mem_stage: mem_wd_i=%h, daddr=%h, daddr[15:2]=%h, dwe=%b, is_store=%b, aluop=%h", 
+                     mem_wd_i, daddr, daddr[15:2], dwe, is_store, mem_aluop_i);
+        end
+    end
     
     // Load指令处理
     wire is_load = (mem_aluop_i == `MINIMIPS32_LW) || (mem_aluop_i == `MINIMIPS32_LB);

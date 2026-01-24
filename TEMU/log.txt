@@ -1,35 +1,64 @@
-       0:   3c 10 80 01         lui   $s0,   0x8001
-       4:   34 01 00 ff         ori   $at,   $zero,   0x00ff
-       8:   00 00 00 00         sll   $zero,   $zero,   0
-       c:   00 00 00 00         sll   $zero,   $zero,   0
-      10:   00 00 00 00         sll   $zero,   $zero,   0
-      14:   a2 01 00 03         sb    $at,   3($s0)
-      18:   34 01 00 ee         ori   $at,   $zero,   0x00ee
-      1c:   00 00 00 00         sll   $zero,   $zero,   0
-      20:   00 00 00 00         sll   $zero,   $zero,   0
-      24:   00 00 00 00         sll   $zero,   $zero,   0
-      28:   a2 01 00 02         sb    $at,   2($s0)
-      2c:   34 01 00 dd         ori   $at,   $zero,   0x00dd
-      30:   00 00 00 00         sll   $zero,   $zero,   0
-      34:   00 00 00 00         sll   $zero,   $zero,   0
-      38:   00 00 00 00         sll   $zero,   $zero,   0
-      3c:   a2 01 00 01         sb    $at,   1($s0)
-      40:   34 01 00 cc         ori   $at,   $zero,   0x00cc
-      44:   00 00 00 00         sll   $zero,   $zero,   0
-      48:   00 00 00 00         sll   $zero,   $zero,   0
-      4c:   00 00 00 00         sll   $zero,   $zero,   0
-      50:   a2 01 00 00         sb    $at,   0($s0)
-      54:   82 02 00 03         lb    $v0,   3($s0)
-      58:   00 00 00 00         sll   $zero,   $zero,   0
-      5c:   3c 01 44 55         lui   $at,   0x4455
-      60:   00 00 00 00         sll   $zero,   $zero,   0
-      64:   00 00 00 00         sll   $zero,   $zero,   0
-      68:   00 00 00 00         sll   $zero,   $zero,   0
-      6c:   34 21 66 77         ori   $at,   $at,   0x6677
-      70:   00 00 00 00         sll   $zero,   $zero,   0
-      74:   00 00 00 00         sll   $zero,   $zero,   0
-      78:   00 00 00 00         sll   $zero,   $zero,   0
-      7c:   ae 01 00 08         sw    $at,   8($s0)
-      80:   8e 02 00 08         lw    $v0,   8($s0)
-      84:   00 00 00 00         sll   $zero,   $zero,   0
-      88:   4a 00 00 00         sll   $zero,   $zero,   0
+       0:   34 00 ff ff         ori   $zero,   $zero,   0xffff
+       4:   24 00 03 e8         addiu $zero,   $zero,   1000
+       8:   00 00 40 21         addu   $t0,   $zero,   $zero
+       c:   3c 09 ff ff         lui   $t1,   0xffff
+      10:   35 29 ff ff         ori   $t1,   $t1,   0xffff
+      14:   24 0a ff ff         addiu $t2,   $zero,   -1
+      18:   24 0b 7f ff         addiu $t3,   $zero,   32767
+      1c:   24 0c 80 00         addiu $t4,   $zero,   -32768
+      20:   3c 0d 7f ff         lui   $t5,   0x7fff
+      24:   35 ad ff ff         ori   $t5,   $t5,   0xffff
+      28:   34 0e 00 01         ori   $t6,   $zero,   0x0001
+      2c:   01 ae 78 21         addu   $t7,   $t5,   $t6
+      30:   3c 18 80 00         lui   $t8,   0x8000
+      34:   34 19 00 01         ori   $t9,   $zero,   0x0001
+      38:   00 19 80 00         sll   $s0,   $t9,   0
+      3c:   00 19 8f c0         sll   $s1,   $t9,   31
+      40:   34 12 00 1f         ori   $s2,   $zero,   0x001f
+      44:   02 51 98 07         srav   $s3,   $s1,   $s2
+      48:   3c 1c 80 01         lui   $gp,   0x8001
+      4c:   34 14 00 0a         ori   $s4,   $zero,   0x000a
+      50:   af 94 00 00         sw    $s4,   0($gp)
+      54:   34 14 00 14         ori   $s4,   $zero,   0x0014
+      58:   af 94 00 04         sw    $s4,   4($gp)
+      5c:   34 14 00 1e         ori   $s4,   $zero,   0x001e
+      60:   af 94 00 08         sw    $s4,   8($gp)
+      64:   34 15 00 00         ori   $s5,   $zero,   0x0000
+      68:   34 16 00 00         ori   $s6,   $zero,   0x0000
+      6c:   34 17 00 03         ori   $s7,   $zero,   0x0003
+      70:   00 16 10 80         sll   $v0,   $s6,   2
+      74:   03 82 18 21         addu   v1,   $gp,   $v0
+      78:   8c 64 00 00         lw    $a0,   0(v1)
+      7c:   00 00 00 00         sll   $zero,   $zero,   0
+      80:   02 a4 a8 21         addu   $s5,   $s5,   $a0
+      84:   26 d6 00 01         addiu $s6,   $s6,   1
+      88:   16 d7 ff f9         bne   $s6,   $s7,   -7
+      70:   00 16 10 80         sll   $v0,   $s6,   2
+      74:   03 82 18 21         addu   v1,   $gp,   $v0
+      78:   8c 64 00 00         lw    $a0,   0(v1)
+      7c:   00 00 00 00         sll   $zero,   $zero,   0
+      80:   02 a4 a8 21         addu   $s5,   $s5,   $a0
+      84:   26 d6 00 01         addiu $s6,   $s6,   1
+      88:   16 d7 ff f9         bne   $s6,   $s7,   -7
+      70:   00 16 10 80         sll   $v0,   $s6,   2
+      74:   03 82 18 21         addu   v1,   $gp,   $v0
+      78:   8c 64 00 00         lw    $a0,   0(v1)
+      7c:   00 00 00 00         sll   $zero,   $zero,   0
+      80:   02 a4 a8 21         addu   $s5,   $s5,   $a0
+      84:   26 d6 00 01         addiu $s6,   $s6,   1
+      88:   16 d7 ff f9         bne   $s6,   $s7,   -7
+      8c:   00 00 00 00         sll   $zero,   $zero,   0
+      90:   00 00 00 00         sll   $zero,   $zero,   0
+      94:   3c 05 78 56         lui   $a1,   0x7856
+      98:   34 a5 34 12         ori   $a1,   $a1,   0x3412
+      9c:   af 85 00 64         sw    $a1,   100($gp)
+      a0:   8f 89 00 64         lw    $t1,   100($gp)
+      a4:   3c 0a ab cd         lui   $t2,   0xabcd
+      a8:   35 4a ef 12         ori   $t2,   $t2,   0xef12
+      ac:   31 4b 00 ff         andi  $t3,   $t2,   0x00ff
+      b0:   34 0c 00 18         ori   $t4,   $zero,   0x0018
+      b4:   01 8a 68 07         srav   $t5,   $t2,   $t4
+      b8:   31 ad 00 ff         andi  $t5,   $t5,   0x00ff
+      bc:   3c 01 de ad         lui   $at,   0xdead
+      c0:   34 21 be ef         ori   $at,   $at,   0xbeef
+      c4:   4a 00 00 00         ori   $at,   $at,   0xbeef

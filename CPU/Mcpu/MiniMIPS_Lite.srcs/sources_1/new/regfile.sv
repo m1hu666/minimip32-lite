@@ -62,24 +62,26 @@ module regfile(
 		end
 	end
 	
-	//读端口1的读操作 
-	// ra1是读地址、wa是写地址、we是写使能、wd是要写入的数据 
+	//读端口1的读操作 - 添加写优先
 	always @(*) begin
 		if (cpu_rst_n == `RST_ENABLE)
 			rd1 <= `ZERO_WORD;
 		else if (ra1 == `REG_NOP)
 			rd1 <= `ZERO_WORD;
+		else if ((we == `WRITE_ENABLE) && (wa == ra1) && (wa != 5'h0))
+			rd1 <= wd;  // 写优先：如果正在写入当前读取的寄存器，直接返回写入值
 		else
 			rd1 <= regs[ra1];
 	end
-	
-	//读端口2的读操作 
-	// ra2是读地址、wa是写地址、we是写使能、wd是要写入的数据 
+
+	//读端口2的读操作 - 添加写优先
 	always @(*) begin
 		if (cpu_rst_n == `RST_ENABLE)
 			rd2 <= `ZERO_WORD;
 		else if (ra2 == `REG_NOP)
 			rd2 <= `ZERO_WORD;
+		else if ((we == `WRITE_ENABLE) && (wa == ra2) && (wa != 5'h0))
+			rd2 <= wd;  // 写优先：如果正在写入当前读取的寄存器，直接返回写入值
 		else
 			rd2 <= regs[ra2];
 	end

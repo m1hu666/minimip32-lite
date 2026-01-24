@@ -1,0 +1,68 @@
+
+build/test7:     file format elf32-tradlittlemips
+build/test7
+
+
+Disassembly of section .text:
+
+80000000 <main>:
+80000000:	3400ffff 	li	zero,0xffff
+80000004:	240003e8 	li	zero,1000
+80000008:	00004021 	move	t0,zero
+8000000c:	3c09ffff 	lui	t1,0xffff
+80000010:	3529ffff 	ori	t1,t1,0xffff
+80000014:	240affff 	li	t2,-1
+80000018:	240b7fff 	li	t3,32767
+8000001c:	240c8000 	li	t4,-32768
+80000020:	3c0d7fff 	lui	t5,0x7fff
+80000024:	35adffff 	ori	t5,t5,0xffff
+80000028:	340e0001 	li	t6,0x1
+8000002c:	01ae7821 	addu	t7,t5,t6
+80000030:	3c188000 	lui	t8,0x8000
+80000034:	34190001 	li	t9,0x1
+80000038:	00198000 	sll	s0,t9,0x0
+8000003c:	00198fc0 	sll	s1,t9,0x1f
+80000040:	3412001f 	li	s2,0x1f
+80000044:	02519807 	srav	s3,s1,s2
+80000048:	3c1c8001 	lui	gp,0x8001
+8000004c:	3414000a 	li	s4,0xa
+80000050:	af940000 	sw	s4,0(gp)
+80000054:	34140014 	li	s4,0x14
+80000058:	af940004 	sw	s4,4(gp)
+8000005c:	3414001e 	li	s4,0x1e
+80000060:	af940008 	sw	s4,8(gp)
+80000064:	34150000 	li	s5,0x0
+80000068:	34160000 	li	s6,0x0
+8000006c:	34170003 	li	s7,0x3
+
+80000070 <SUM_LOOP>:
+SUM_LOOP():
+80000070:	00161080 	sll	v0,s6,0x2
+80000074:	03821821 	addu	v1,gp,v0
+80000078:	8c640000 	lw	a0,0(v1)
+8000007c:	00000000 	nop
+80000080:	02a4a821 	addu	s5,s5,a0
+80000084:	26d60001 	addiu	s6,s6,1
+80000088:	16d7fff9 	bne	s6,s7,80000070 <SUM_LOOP>
+8000008c:	00000000 	nop
+80000090:	00000000 	nop
+80000094:	3c057856 	lui	a1,0x7856
+80000098:	34a53412 	ori	a1,a1,0x3412
+8000009c:	af850064 	sw	a1,100(gp)
+800000a0:	8f890064 	lw	t1,100(gp)
+800000a4:	3c0aabcd 	lui	t2,0xabcd
+800000a8:	354aef12 	ori	t2,t2,0xef12
+800000ac:	314b00ff 	andi	t3,t2,0xff
+800000b0:	340c0018 	li	t4,0x18
+800000b4:	018a6807 	srav	t5,t2,t4
+800000b8:	31ad00ff 	andi	t5,t5,0xff
+800000bc:	3c01dead 	lui	at,0xdead
+800000c0:	3421beef 	ori	at,at,0xbeef
+800000c4:	4a000000 	c2	0x0
+
+Disassembly of section .reginfo:
+
+00000000 <.reginfo>:
+   0:	13ffff3e 	beq	ra,ra,fffffcfc <_etext+0x7ffffc34>
+   4:	00000000 	nop
+	...

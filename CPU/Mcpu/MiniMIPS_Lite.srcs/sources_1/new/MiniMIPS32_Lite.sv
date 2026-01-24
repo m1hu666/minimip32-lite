@@ -58,7 +58,8 @@ module MiniMIPS32_Lite(
     wire 				   mem_wreg_i;
     wire [`REG_ADDR_BUS  ] mem_wa_i;
     wire [`REG_BUS 	     ] mem_wd_i;
-    wire [`REG_BUS       ] mem_mem_data_i;
+    wire [`REG_BUS       ] mem_mem_data_i;  // exemem_reg的输出
+    wire [`REG_BUS       ] mem_mem_data_o;  // exemem_reg输出后的信号
 
     wire 				   mem_wreg_o;
     wire [`REG_ADDR_BUS  ] mem_wa_o;
@@ -153,13 +154,13 @@ module MiniMIPS32_Lite(
         .exe_debug_wb_pc(exe_debug_wb_pc_o),
         .mem_aluop(mem_aluop_i),
         .mem_wa(mem_wa_i), .mem_wreg(mem_wreg_i), .mem_wd(mem_wd_i),
-        .mem_mem_data(mem_mem_data_i),
+        .mem_mem_data(mem_mem_data_o),  // 输出到新的wire
         .mem_debug_wb_pc(mem_debug_wb_pc_i)
     );
 
     mem_stage mem_stage0(.mem_aluop_i(mem_aluop_i),
         .mem_wa_i(mem_wa_i), .mem_wreg_i(mem_wreg_i), .mem_wd_i(mem_wd_i),
-        .mem_mem_data_i(mem_mem_data_i),
+        .mem_mem_data_i(mem_mem_data_o),  // 使用exemem_reg的输出
         .mem_debug_wb_pc(mem_debug_wb_pc_i),
         .drdata(drdata),
         .mem_wa_o(mem_wa_o), .mem_wreg_o(mem_wreg_o), .mem_dreg_o(mem_dreg_o),

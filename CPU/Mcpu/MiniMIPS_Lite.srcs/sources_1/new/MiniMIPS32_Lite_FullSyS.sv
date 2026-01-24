@@ -63,6 +63,15 @@ module MiniMIPS32_Lite_FullSyS(
     );
     
     // 数据存储器实例化
+    // data_ram配置为16384深度(64KB)，需要14位地址
+    // 添加调试输出
+    always @(posedge cpu_clk) begin
+        if (dwe) begin
+            $display("DEBUG FullSyS WRITE: daddr=%h, daddr[15:2]=%h, dwdata=%h", 
+                     daddr, daddr[15:2], dwdata);
+        end
+    end
+    
     data_ram data_ram0 (
       .clk(cpu_clk),           // input wire clk
       .a(daddr[15:2]),         // input wire [13 : 0] a
