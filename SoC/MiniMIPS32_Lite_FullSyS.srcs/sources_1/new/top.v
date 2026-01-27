@@ -1,4 +1,4 @@
-module top(
+module top_0(
     input clk,  // 50Mhz
     input locked,
     

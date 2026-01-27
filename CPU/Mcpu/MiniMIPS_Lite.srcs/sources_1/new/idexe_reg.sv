@@ -3,9 +3,8 @@
 module idexe_reg (
     input  wire 				  cpu_clk_50M,
     input  wire 				  cpu_rst_n,
-    input  wire [5:0]             stall,        // 暂停信号
+    input  wire [5:0]             stall,
 
-    // 来自译码阶段的信息
     input  wire [`ALUTYPE_BUS  ]  id_alutype,
     input  wire [`ALUOP_BUS    ]  id_aluop,
     input  wire [`REG_BUS      ]  id_src1,
@@ -13,9 +12,8 @@ module idexe_reg (
     input  wire [`REG_ADDR_BUS ]  id_wa,
     input  wire                   id_wreg,
     input  wire [`REG_BUS      ]  id_mem_data,
-    input  wire [`INST_ADDR_BUS]  id_debug_wb_pc, // 供调试使用的PC值，上板测试时务必删除该信号
+    input  wire [`INST_ADDR_BUS]  id_debug_wb_pc,
     
-    // 送至执行阶段的信息
     output reg  [`ALUTYPE_BUS  ]  exe_alutype,
     output reg  [`ALUOP_BUS    ]  exe_aluop,
     output reg  [`REG_BUS      ]  exe_src1,
@@ -23,11 +21,17 @@ module idexe_reg (
     output reg  [`REG_ADDR_BUS ]  exe_wa,
     output reg                    exe_wreg,
     output reg  [`REG_BUS      ]  exe_mem_data,
-    output reg  [`INST_ADDR_BUS]  exe_debug_wb_pc  // 供调试使用的PC值，上板测试时务必删除该信号
+    output reg  [`INST_ADDR_BUS]  exe_debug_wb_pc
     );
 
+    // 日志文件
+    integer log_file;
+    initial begin
+        log_file = $fopen("stall_bubble.txt", "w");
+        if (log_file) $fwrite(log_file, "Simulation Start: Pipeline Reg Monitoring...\n");
+    end
+
     always @(posedge cpu_clk_50M) begin
-        // 复位的时候将送至执行阶段的信息清0
         if (cpu_rst_n == `RST_ENABLE) begin
             exe_alutype 	   <= `NOP;
             exe_aluop 		   <= `MINIMIPS32_SLL;
@@ -36,20 +40,23 @@ module idexe_reg (
             exe_wa 			   <= `REG_NOP;
             exe_wreg    	   <= `WRITE_DISABLE;
             exe_mem_data       <= `ZERO_WORD;
-            exe_debug_wb_pc    <= `PC_INIT;   // 上板测试时务必删除该语句
+            exe_debug_wb_pc    <= `PC_INIT;
         end
-        // 当EXE阶段暂停而ID阶段继续时，插入气泡（NOP）
-        else if (stall[3] == `TRUE_V && stall[2] == `FALSE_V) begin
+        // 【关键修复与日志】
+        else if (stall[2] == `TRUE_V && stall[3] == `FALSE_V) begin
             exe_alutype        <= `NOP;
-            exe_aluop          <= `MINIMIPS32_SLL;
+            exe_aluop          <= `MINIMIPS32_SLL; // NOP
             exe_src1           <= `ZERO_WORD;
             exe_src2           <= `ZERO_WORD;
             exe_wa             <= `REG_NOP;
             exe_wreg           <= `WRITE_DISABLE;
             exe_mem_data       <= `ZERO_WORD;
             exe_debug_wb_pc    <= `PC_INIT;
+            
+            // 写入文件
+            $fwrite(log_file, "[%t] BUBBLE INSERTED: ID Stalled, Inserting NOP into EXE\n", $time);
+            $fflush(log_file);
         end
-        // 当EXE阶段不暂停时，将来自译码阶段的信息寄存并送至执行阶段
         else if (stall[3] == `FALSE_V) begin
             exe_alutype 	   <= id_alutype;
             exe_aluop 		   <= id_aluop;
@@ -58,9 +65,8 @@ module idexe_reg (
             exe_wa 			   <= id_wa;
             exe_wreg		   <= id_wreg;
             exe_mem_data       <= id_mem_data;
-            exe_debug_wb_pc    <= id_debug_wb_pc;   // 上板测试时务必删除该语句
+            exe_debug_wb_pc    <= id_debug_wb_pc;
         end
-        // 否则保持不变（暂停）
     end
 
 endmodule

@@ -3,7 +3,7 @@
    .globl main
    .text
 main:
-   # test4.S - Load/Store指令测试（仅SW/LW/LB，不含SB）
+   # test4.S - Load/Store指令测试
    # 测试：LW, LB, SW（data_ram不支持字节写使能）
    
    # 初始化基地址
@@ -50,6 +50,26 @@ main:
    
    # 重新设置基地址
    lui  $s0, 0x8001           # $s0 = 0x80010000 (恢复基地址)
+
+   # SB测试：存字节（读-改-写验证）
+   # 初始 [0] = 0x12345678
+   ori  $t4, $zero, 0xAA     # 0xAA
+   sb   $t4, 0($s0)          # byte0 <- 0xAA -> word becomes 0x123456AA
+   lw   $t5, 0($s0)          # $t5 = 0x123456AA (验证整字读回)
+
+   ori  $t4, $zero, 0x55     # 0x55
+   sb   $t4, 1($s0)          # byte1 <- 0x55 -> word becomes 0x123455AA
+   lw   $t6, 0($s0)          # $t6 = 0x123455AA
+
+   ori  $t4, $zero, 0xFF     # 0xFF
+   sb   $t4, 2($s0)          # byte2 <- 0xFF -> word becomes 0x12FF55AA
+   lw   $t7, 0($s0)          # $t7 = 0x12FF55AA
+
+   # 在跨字边界的位置写字节（例如 offset 5 对应 word at addr 4）
+   ori  $t4, $zero, 0x7F
+   sb   $t4, 5($s0)          # write byte at addr 0x80010005 (affects word at 0x80010004)
+   lb   $s6, 5($s0)          # read back the byte (sign-extended): expect 0x0000007F
+
    
    # 大偏移测试（测试前推）
    sw   $t1, 100($s0)         # [0x80010064] = 0xABCDEF00
