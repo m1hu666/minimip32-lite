@@ -1,4 +1,0 @@
-ctrl
-alu
-fulladder
-rca

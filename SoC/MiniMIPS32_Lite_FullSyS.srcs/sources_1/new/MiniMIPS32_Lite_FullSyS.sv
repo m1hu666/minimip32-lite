@@ -1,3 +1,4 @@
+//3023244073 hya666
 module MiniMIPS32_Lite_FullSyS(
     input  wire         clk,            // 50MHz
     input  wire         locked,         // PLL Locked (忽略，使用内部计数器复位)

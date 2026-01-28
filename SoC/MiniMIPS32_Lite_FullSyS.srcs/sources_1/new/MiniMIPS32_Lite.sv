@@ -161,37 +161,37 @@ module MiniMIPS32_Lite(
     // =========================================================
     //  CPU 顶层调试监控逻辑
     // =========================================================
-    integer log_file;
-    initial begin
-        log_file = $fopen("cpu_debug.log", "w");
-        if (log_file) begin
-            $fdisplay(log_file, "Time(ns) | RST_N | PC_Current | ID_PC      | ID_Inst  | Stall[5:0] | BrFlag | BrTarget   | WB_Data");
-            $fdisplay(log_file, "-----------------------------------------------------------------------------------------------------");
-        end else begin
-            $display("Error: Could not open cpu_debug.log");
-        end
-    end
+//    integer log_file;
+//    initial begin
+//        log_file = $fopen("cpu_debug.log", "w");
+//        if (log_file) begin
+//            $fdisplay(log_file, "Time(ns) | RST_N | PC_Current | ID_PC      | ID_Inst  | Stall[5:0] | BrFlag | BrTarget   | WB_Data");
+//            $fdisplay(log_file, "-----------------------------------------------------------------------------------------------------");
+//        end else begin
+//            $display("Error: Could not open cpu_debug.log");
+//        end
+//    end
 
-    always @(posedge cpu_clk_50M) begin
-        if (log_file) begin
-            $fdisplay(log_file, "%8t | %b     | %h | %h | %h | %b     | %b      | %h | %h",
-                      $time, 
-                      cpu_rst_n, 
-                      pc,            // 当前取指PC
-                      id_pc_i,       // 译码阶段PC
-                      id_inst_i,     // 译码阶段指令
-                      stall,         // 全局暂停信号
-                      id_branch_flag,// 跳转发生标志
-                      id_branch_target, // 跳转目标
-                      wb_wd_o        // 写回数据(辅助判断程序进展)
-            );
+//    always @(posedge cpu_clk_50M) begin
+//        if (log_file) begin
+//            $fdisplay(log_file, "%8t | %b     | %h | %h | %h | %b     | %b      | %h | %h",
+//                      $time, 
+//                      cpu_rst_n, 
+//                      pc,            // 当前取指PC
+//                      id_pc_i,       // 译码阶段PC
+//                      id_inst_i,     // 译码阶段指令
+//                      stall,         // 全局暂停信号
+//                      id_branch_flag,// 跳转发生标志
+//                      id_branch_target, // 跳转目标
+//                      wb_wd_o        // 写回数据(辅助判断程序进展)
+//            );
 
-            // 【异常捕捉】: 如果不在复位期间，且PC突然变为0 (注意MIPS通常从0开始复位，但运行中不应回0，除非特意跳转)
-            // 如果你的PC初始值不是0 (比如是 0x80000000)，请将 32'h0 改为你的初始PC值
-            if (pc == 32'h80000000 && cpu_rst_n == 1'b1) begin
-                 $fdisplay(log_file, "!!! ABNORMAL RESET DETECTED: PC hit 0x0 while RST is inactive !!!");
-            end
-        end
-    end
+//            // 【异常捕捉】: 如果不在复位期间，且PC突然变为0 (注意MIPS通常从0开始复位，但运行中不应回0，除非特意跳转)
+//            // 如果你的PC初始值不是0 (比如是 0x80000000)，请将 32'h0 改为你的初始PC值
+//            if (pc == 32'h80000000 && cpu_rst_n == 1'b1) begin
+//                 $fdisplay(log_file, "!!! ABNORMAL RESET DETECTED: PC hit 0x0 while RST is inactive !!!");
+//            end
+//        end
+//    end
 
 endmodule
