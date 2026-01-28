@@ -60,7 +60,7 @@ module regfile(
 			if ((we == `WRITE_ENABLE) && (wa != 5'h0)) begin
 				regs[wa] <= wd;
 				// µ÷ÊÔ£º¼à¿ØËùÓÐ¼Ä´æÆ÷Ð´Èë
-				$display("[%t] [REGFILE WRITE] r%d <= 0x%h", $time, wa, wd);
+				// $display("[%t] [REGFILE WRITE] r%d <= 0x%h", $time, wa, wd);
 			end
 		end
 	end

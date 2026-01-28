@@ -2,7 +2,6 @@
 
 module id_stage(
     input  wire [`INST_ADDR_BUS]    id_pc_i,
-    input  wire [`INST_ADDR_BUS]    id_debug_wb_pc,
     input  wire [`INST_BUS     ]    id_inst_i,
     input  wire [`REG_BUS      ]    rd1,
     input  wire [`REG_BUS      ]    rd2,
@@ -24,8 +23,7 @@ module id_stage(
     output wire [`INST_ADDR_BUS]    id_branch_target_o,
     output reg                      stallreq_id,
     output wire [`REG_ADDR_BUS ]    ra1,
-    output wire [`REG_ADDR_BUS ]    ra2,
-    output       [`INST_ADDR_BUS] 	debug_wb_pc
+    output wire [`REG_ADDR_BUS ]    ra2
     );
 
     wire [`INST_BUS] id_inst = {id_inst_i[7:0], id_inst_i[15:8], id_inst_i[23:16], id_inst_i[31:24]};
@@ -179,6 +177,5 @@ module id_stage(
     
     assign id_branch_flag_o = (stallreq_id == `TRUE_V) ? 1'b0 : (beq_taken | bne_taken | blez_taken);
     assign id_branch_target_o = branch_target;
-    assign debug_wb_pc = id_debug_wb_pc;
 
 endmodule

@@ -12,14 +12,12 @@ module exemem_reg (
     input  wire                 exe_wreg,
     input  wire [`REG_BUS 	  ] exe_wd,
     input  wire [`REG_BUS     ] exe_mem_data,
-    input  wire [`INST_ADDR_BUS] exe_debug_wb_pc,
     
     output reg  [`ALUOP_BUS   ] mem_aluop,
     output reg  [`REG_ADDR_BUS] mem_wa,
     output reg                  mem_wreg,
     output reg  [`REG_BUS 	  ] mem_wd,
-    output reg  [`REG_BUS     ] mem_mem_data,
-    output reg  [`INST_ADDR_BUS] mem_debug_wb_pc
+    output reg  [`REG_BUS     ] mem_mem_data
     );
 
     always @(posedge cpu_clk_50M) begin
@@ -29,7 +27,6 @@ module exemem_reg (
             mem_wreg   		<= `WRITE_DISABLE;
             mem_wd   		<= `ZERO_WORD;
             mem_mem_data    <= `ZERO_WORD;
-            mem_debug_wb_pc <= `PC_INIT;
         end
         // 关键修正：EXE暂停但MEM继续时，插入气泡(NOP)，防止指令重复执行
         else if (stall[3] == `TRUE_V && stall[4] == `FALSE_V) begin
@@ -38,7 +35,6 @@ module exemem_reg (
             mem_wreg   		<= `WRITE_DISABLE;
             mem_wd   		<= `ZERO_WORD;
             mem_mem_data    <= `ZERO_WORD;
-            mem_debug_wb_pc <= `PC_INIT; 
         end
         // 正常流动
         else if (stall[3] == `FALSE_V) begin
@@ -47,7 +43,6 @@ module exemem_reg (
             mem_wreg 		<= exe_wreg;
             mem_wd 		    <= exe_wd;
             mem_mem_data    <= exe_mem_data;
-            mem_debug_wb_pc <= exe_debug_wb_pc;
         end
         // 如果 stall[4] == TRUE，则保持输出不变(Hold)
     end

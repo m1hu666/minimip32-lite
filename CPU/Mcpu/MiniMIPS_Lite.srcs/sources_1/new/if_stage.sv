@@ -9,8 +9,7 @@ module if_stage (
     input                       branch_flag_i,
     input  [`INST_ADDR_BUS]     branch_target_i,
     
-    output logic [31:0] pc,
-    output [31:0] debug_wb_pc  // 供调试使用的PC值，上板测试时务必删除该信号
+    output logic [31:0] pc
     );
     
     wire [`INST_ADDR_BUS] pc_next;
@@ -24,7 +23,5 @@ module if_stage (
         end
         // 否则保持不变（暂停）
     end
-    
-    assign debug_wb_pc = pc;   // 上板测试时务必删除该语句
 
 endmodule

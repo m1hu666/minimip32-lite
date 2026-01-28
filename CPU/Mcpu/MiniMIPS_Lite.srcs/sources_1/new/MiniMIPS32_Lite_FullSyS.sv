@@ -22,11 +22,6 @@ module MiniMIPS32_Lite_FullSyS(
         if(~locked) cpu_rst_n = 1'b0; 
         else        cpu_rst_n = 1'b1;
     end
-    
-    wire [31:0] debug_wb_pc;       // 供调试使用的PC值，上板测试时务必删除该信号 
-    wire        debug_wb_rf_wen;   // 供调试使用的PC值，上板测试时务必删除该信号 
-    wire [ 4:0] debug_wb_rf_wnum;  // 供调试使用的PC值，上板测试时务必删除该信号 
-    wire [31:0] debug_wb_rf_wdata;  // 供调试使用的PC值，上板测试时务必删除该信号 
 
     // 数据存储器相关信号
     logic [31:0] daddr;
@@ -49,12 +44,7 @@ module MiniMIPS32_Lite_FullSyS(
         .drdata(drdata),
         .dwdata(dwdata),
         .dwe(dwe),
-        .dce(dce),
-        
-        .debug_wb_pc(debug_wb_pc),
-        .debug_wb_rf_wen(debug_wb_rf_wen),
-        .debug_wb_rf_wnum(debug_wb_rf_wnum),
-        .debug_wb_rf_wdata(debug_wb_rf_wdata)
+        .dce(dce)
     );
     
     inst_rom inst_rom0 (
@@ -65,12 +55,12 @@ module MiniMIPS32_Lite_FullSyS(
     // 数据存储器实例化
     // data_ram配置为16384深度(64KB)，需要14位地址
     // 添加调试输出
-    always @(posedge cpu_clk) begin
-        if (dwe) begin
-            $display("DEBUG FullSyS WRITE: daddr=%h, daddr[15:2]=%h, dwdata=%h", 
-                     daddr, daddr[15:2], dwdata);
-        end
-    end
+    // always @(posedge cpu_clk) begin
+    //     if (dwe) begin
+    //         $display("DEBUG FullSyS WRITE: daddr=%h, daddr[15:2]=%h, dwdata=%h", 
+    //                  daddr, daddr[15:2], dwdata);
+    //     end
+    // end
     
     data_ram data_ram0 (
       .clk(cpu_clk),           // input wire clk

@@ -10,7 +10,6 @@ module exe_stage (
     input  wire [`REG_ADDR_BUS 	] 	exe_wa_i,
     input  wire 					exe_wreg_i,
     input  wire [`REG_BUS       ]   exe_mem_data_i,
-    input  wire [`INST_ADDR_BUS]    exe_debug_wb_pc,  // 供调试使用的PC值，上板测试时务必删除该信号
     
     // 时钟和复位信号
     input  wire                     cpu_clk_50M,
@@ -21,9 +20,7 @@ module exe_stage (
     output wire [`REG_ADDR_BUS 	] 	exe_wa_o,
     output wire 					exe_wreg_o,
     output wire [`REG_BUS 		] 	exe_wd_o,
-    output wire [`REG_BUS       ]   exe_mem_data_o,
-    
-    output wire [`INST_ADDR_BUS] 	debug_wb_pc  // 供调试使用的PC值，上板测试时务必删除该信号
+    output wire [`REG_BUS       ]   exe_mem_data_o
     );
 
     // 直接传到下一阶段
@@ -146,7 +143,5 @@ module exe_stage (
                        exe_alutype_i == `SHIFT ||
                        exe_alutype_i == `ARITH)             ? alu_res    :
                       `ZERO_WORD;
-    
-    assign debug_wb_pc = exe_debug_wb_pc;    // 上板测试时务必删除该语句 
 
 endmodule

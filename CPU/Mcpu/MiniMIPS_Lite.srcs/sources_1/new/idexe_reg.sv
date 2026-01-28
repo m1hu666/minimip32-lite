@@ -12,7 +12,6 @@ module idexe_reg (
     input  wire [`REG_ADDR_BUS ]  id_wa,
     input  wire                   id_wreg,
     input  wire [`REG_BUS      ]  id_mem_data,
-    input  wire [`INST_ADDR_BUS]  id_debug_wb_pc,
     
     output reg  [`ALUTYPE_BUS  ]  exe_alutype,
     output reg  [`ALUOP_BUS    ]  exe_aluop,
@@ -20,16 +19,15 @@ module idexe_reg (
     output reg  [`REG_BUS      ]  exe_src2,
     output reg  [`REG_ADDR_BUS ]  exe_wa,
     output reg                    exe_wreg,
-    output reg  [`REG_BUS      ]  exe_mem_data,
-    output reg  [`INST_ADDR_BUS]  exe_debug_wb_pc
+    output reg  [`REG_BUS      ]  exe_mem_data
     );
 
     // 日志文件
-    integer log_file;
-    initial begin
-        log_file = $fopen("stall_bubble.txt", "w");
-        if (log_file) $fwrite(log_file, "Simulation Start: Pipeline Reg Monitoring...\n");
-    end
+    // integer log_file;
+    // initial begin
+    //     log_file = $fopen("stall_bubble.txt", "w");
+    //     if (log_file) $fwrite(log_file, "Simulation Start: Pipeline Reg Monitoring...\n");
+    // end
 
     always @(posedge cpu_clk_50M) begin
         if (cpu_rst_n == `RST_ENABLE) begin
@@ -40,7 +38,6 @@ module idexe_reg (
             exe_wa 			   <= `REG_NOP;
             exe_wreg    	   <= `WRITE_DISABLE;
             exe_mem_data       <= `ZERO_WORD;
-            exe_debug_wb_pc    <= `PC_INIT;
         end
         // 【关键修复与日志】
         else if (stall[2] == `TRUE_V && stall[3] == `FALSE_V) begin
@@ -51,11 +48,10 @@ module idexe_reg (
             exe_wa             <= `REG_NOP;
             exe_wreg           <= `WRITE_DISABLE;
             exe_mem_data       <= `ZERO_WORD;
-            exe_debug_wb_pc    <= `PC_INIT;
             
-            // 写入文件
-            $fwrite(log_file, "[%t] BUBBLE INSERTED: ID Stalled, Inserting NOP into EXE\n", $time);
-            $fflush(log_file);
+            // // 写入文件
+            // $fwrite(log_file, "[%t] BUBBLE INSERTED: ID Stalled, Inserting NOP into EXE\n", $time);
+            // $fflush(log_file);
         end
         else if (stall[3] == `FALSE_V) begin
             exe_alutype 	   <= id_alutype;
@@ -65,7 +61,6 @@ module idexe_reg (
             exe_wa 			   <= id_wa;
             exe_wreg		   <= id_wreg;
             exe_mem_data       <= id_mem_data;
-            exe_debug_wb_pc    <= id_debug_wb_pc;
         end
     end
 

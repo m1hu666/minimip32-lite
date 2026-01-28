@@ -4,40 +4,31 @@ module ctrl(
     input  wire                 rst,
     input  wire                 stallreq_id,
     input  wire                 stallreq_exe,
-    input  wire                 stallreq_mem,
-    output reg  [5:0]           stall
+    input  wire                 stallreq_mem, // 这里实际连接的是 inst_rom_stall
+    output reg [5:0]            stall
 );
-    
-    // 日志文件
-    integer log_file;
-    initial begin
-        log_file = $fopen("stall_ctrl.txt", "w");
-        if (log_file) $fwrite(log_file, "Simulation Start: CTRL Module Monitoring...\n");
-    end
 
     always @(*) begin
         if (rst == `RST_ENABLE) begin
             stall = 6'b000000;
         end
         else if (stallreq_mem == `TRUE_V) begin
-            stall = 6'b011111;
+            // 【关键修改】
+            // 原来是 011111 (暂停全流水线)
+            // 改为   000111 (只暂停 PC, IF, ID)
+            // 解释：指令ROM忙碌只影响取指。已经在流水线里的 EXE/MEM 指令应该继续跑，
+            // 这样 MEM 阶段的 Store 指令就能在 1 个周期后结束，不会卡住导致重复写。
+            stall = 6'b000111;
         end
         else if (stallreq_exe == `TRUE_V) begin
             stall = 6'b001111;
         end
         else if (stallreq_id == `TRUE_V) begin
-            stall = 6'b000111; // ID暂停，EXE继续
+            stall = 6'b000111;
         end
         else begin
             stall = 6'b000000;
         end
     end
-    
-    // 监控变化
-    always @(stall) begin
-        if (stall != 0) begin
-            $fwrite(log_file, "[%t] CTRL OUTPUT: Stall=%b (req_id=%b, req_mem=%b)\n", $time, stall, stallreq_id, stallreq_mem);
-            $fflush(log_file);
-        end
-    end
+
 endmodule
