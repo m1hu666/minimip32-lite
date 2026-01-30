@@ -39,7 +39,7 @@ module idexe_reg (
             exe_wreg    	   <= `WRITE_DISABLE;
             exe_mem_data       <= `ZERO_WORD;
         end
-        // 【关键修复与日志】
+        
         else if (stall[2] == `TRUE_V && stall[3] == `FALSE_V) begin
             exe_alutype        <= `NOP;
             exe_aluop          <= `MINIMIPS32_SLL; // NOP

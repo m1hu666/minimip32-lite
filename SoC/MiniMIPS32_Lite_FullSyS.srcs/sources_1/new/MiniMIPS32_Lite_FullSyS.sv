@@ -1,4 +1,3 @@
-//3023244073 hya666
 module MiniMIPS32_Lite_FullSyS(
     input  wire         clk,            // 50MHz
     input  wire         locked,         // PLL Locked (忽略，使用内部计数器复位)
@@ -18,7 +17,7 @@ module MiniMIPS32_Lite_FullSyS(
     parameter UART_BAUD = 9600;
 
     //======================================================================
-    // 1. 纯计数器复位 (20ms 强力复位)
+    // 1. 纯计数器复位
     //======================================================================
     logic rst_n;
     reg [19:0] rst_cnt = 20'd0;
@@ -117,7 +116,7 @@ module MiniMIPS32_Lite_FullSyS(
     always_ff @(posedge clk) begin
         if (~rst_n) ext_uart_avai <= 1'b0;
         else if (ext_uart_ready) ext_uart_avai <= 1'b1;
-        // 【关键优化】只要是对 Data Reg 的读操作，就清除标志，放宽 dce 检查
+        // 只要是对 Data Reg 的读操作，就清除标志，放宽 dce 检查
         else if (uart_access && !cpu_dwe && (|cpu_dce) && cpu_daddr[11:0] == 12'h3F8) ext_uart_avai <= 1'b0;
     end
 
@@ -125,40 +124,37 @@ module MiniMIPS32_Lite_FullSyS(
         .clk(clk), .TxD(txd), .TxD_busy(ext_uart_busy), .TxD_start(ext_uart_start), .TxD_data(ext_uart_tx)
     );
 
-    //======================================================================
-    // 4. 写请求逻辑 (带 1ms 冷却时间，彻底解决 FFib)
-    //======================================================================
-    logic uart_write_req; 
-    reg   uart_write_lock; 
-    reg [15:0] cooldown_cnt = 16'd0; // 赋初值 0
-
-    wire is_uart_write_addr;
-    // 严格检查写使能
-    assign is_uart_write_addr = uart_access && cpu_dwe && (|cpu_dce) && (cpu_daddr[11:0] == 12'h3F8);
-
-    always_ff @(posedge clk) begin
-        if (~rst_n) begin
-            uart_write_req <= 1'b0;
-            uart_write_lock <= 1'b0;
-            cooldown_cnt <= 16'd0;
-        end else begin
-            // 冷却倒计时
-            if (cooldown_cnt > 0) 
-                cooldown_cnt <= cooldown_cnt - 1'b1;
-
-            // 状态机：发起写 -> 锁定 -> 冷却
-            if (is_uart_write_addr && !uart_write_lock && (cooldown_cnt == 0)) begin
-                uart_write_req <= 1'b1;
-                uart_write_lock <= 1'b1; 
-                cooldown_cnt <= 16'd50000; // 锁定 1ms (50,000 cycles)
-            end else if (!is_uart_write_addr) begin
+    // ======================================================================
+        // 4. 写请求逻辑 (确保握手信号正确，移除冷却限制)
+        // ======================================================================
+        logic uart_write_req;
+        reg   uart_write_lock; 
+    
+        wire is_uart_write_addr;
+        // 只有当 CPU 写使能有效、片选有效、且地址匹配时，才认定为写操作
+        assign is_uart_write_addr = uart_access && cpu_dwe && (|cpu_dce) && (cpu_daddr[11:0] == 12'h3F8);
+    
+        always_ff @(posedge clk) begin
+            if (~rst_n) begin
                 uart_write_req <= 1'b0;
-                uart_write_lock <= 1'b0; 
+                uart_write_lock <= 1'b0;
             end else begin
-                uart_write_req <= 1'b0; 
+                // 1. 只要是写地址，且还没锁住，就拉高请求信号 (Kick the transmitter)
+                if (is_uart_write_addr && !uart_write_lock) begin
+                    uart_write_req <= 1'b1;  // 启动发送
+                    uart_write_lock <= 1'b1; // 锁定，防止一个写周期触发多次
+                end 
+                // 2. 当 CPU 撤销写操作（指令周期结束）时，释放锁定
+                else if (!is_uart_write_addr) begin
+                    uart_write_req <= 1'b0;  // 撤销请求
+                    uart_write_lock <= 1'b0; // 解锁，准备下一次发送
+                end 
+                // 3. 默认保持低电平
+                else begin
+                    uart_write_req <= 1'b0;
+                end
             end
         end
-    end
     
     always_ff @(posedge clk) begin
         if (~rst_n) ext_uart_start <= 1'b0;
@@ -194,16 +190,8 @@ module MiniMIPS32_Lite_FullSyS(
             btn_reg <= btn; sw1_reg <= sw_1; sw2_reg <= sw_2;
         end
     end
-    
-    // LED 调试映射
-    // LED0: 复位完成 (亮)
-    assign led[0] = rst_n; 
-    // LED1: RX 收到数据 (亮) - 用于判断是否收到T
-    assign led[1] = ext_uart_avai; 
-    // LED2: 冷却中 (闪/亮) - 用于判断是否有"双发"尝试被拦截
-    assign led[2] = (cooldown_cnt > 0);
-    assign led[31:3] = led_reg[31:3];
 
+    assign led = led_reg;
     x7seg seg_ctrl (.clk(clk), .seg_wdata(seg_reg), .seg_cs(seg_cs), .seg_data(seg_data));
 
     // Data Mux

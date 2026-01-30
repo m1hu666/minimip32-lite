@@ -37,7 +37,7 @@ module mem_stage (
     // 翻转后的数据 (用于 RAM)
     wire [31:0] drdata_swapped = {drdata[7:0], drdata[15:8], drdata[23:16], drdata[31:24]};
     
-    // 【关键修复】：如果是 RAM，读进来要翻转(适配小端CPU)；如果是 UART，直接用原始数据(保持低位状态)
+    // 如果是 RAM，读进来要翻转(适配小端CPU)；如果是 UART，直接用原始数据(保持低位状态)
     wire [31:0] final_drdata = is_ram_access ? drdata_swapped : drdata;
 
     wire is_load = (mem_aluop_i == `MINIMIPS32_LW) || (mem_aluop_i == `MINIMIPS32_LB);
@@ -73,7 +73,7 @@ module mem_stage (
     // 翻转后的写数据 (用于 RAM 存储)
     wire [31:0] wdata_swapped = {wdata_raw[7:0], wdata_raw[15:8], wdata_raw[23:16], wdata_raw[31:24]};
 
-    // 【关键修复】：如果是 RAM，写入前翻转(匹配读逻辑)；如果是 UART，直接写(保持低位数据)
+    // 如果是 RAM，写入前翻转(匹配读逻辑)；如果是 UART，直接写(保持低位数据)
     assign dwdata = is_ram_access ? wdata_swapped : wdata_raw;
     
     // =========================================================================
