@@ -52,6 +52,7 @@ module idexe_reg (
             // // Ð´ÈëÎÄ¼þ
             // $fwrite(log_file, "[%t] BUBBLE INSERTED: ID Stalled, Inserting NOP into EXE\n", $time);
             // $fflush(log_file);
+            //3023244073 hya666
         end
         else if (stall[3] == `FALSE_V) begin
             exe_alutype 	   <= id_alutype;

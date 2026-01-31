@@ -46,7 +46,7 @@ module x7seg(
     assign digit[5][7] = 1'b1; // 数码管5的小数点，不显示小数点
     assign digit[6][7] = 1'b1; // 数码管6的小数点，不显示小数点
     assign digit[7][7] = 1'b1; // 数码管7的小数点，不显示小数点
-    assign digit[8][7] = 1'b1; // 数码管8的小数点，不显示小数点
+    assign digit[8][7] = 1'b1; // 数码管8的小数点，不显示小数点 //3023244073 hya666
     
     assign seg_data = digit[scan_sel];
     assign seg_cs = scan_sel;
